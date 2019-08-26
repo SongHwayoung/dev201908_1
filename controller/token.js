@@ -37,10 +37,6 @@ exports.signout = (req, res) => {
         res.json(result);
     }
     });
-    console.log(JSON.stringify(result));
-
-    //con_redis.redisPool.set('test-key3', 'foobar2');
-    //con_redis.redisPool.expire('test-key3', 60);
 }; 
   
 exports.refresh_token = (req, res) => {
@@ -65,6 +61,7 @@ exports.refresh_token = (req, res) => {
                 result.access_token = tokenResult.access_token;
                 result.refresh_token = tokenResult.refresh_token;
                 result.errorCode = 0;
+                
             }else{ // 토큰을 비교하여 틀리다면
                 result.errorCode = 110;                             
                 result.access_token = ''; 
@@ -169,7 +166,6 @@ async function set_access_token(user_id){
         await con_redis.redisPool.set(user_id + 'access', JSON.stringify(result));
         await con_redis.redisPool.expire(user_id + 'access', access_expire_time); // 임시로 60초의 생성시간을 준다.
         
-        result.expire_time = refresh_expire_time;
         await con_redis.redisPool.del(user_id + 'refresh'); // 우선 기존 refresh token 정보를 지운다.
         await con_redis.redisPool.set(user_id + 'refresh', JSON.stringify(result));
         await con_redis.redisPool.expire(user_id + 'refresh', refresh_expire_time); // 임시로 60초의 생성시간을 준다

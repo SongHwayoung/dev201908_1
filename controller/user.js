@@ -3,7 +3,7 @@ var decrypt = require('../common/crypto');
 var token_controller = require('./token');
 
 
-
+// 사용자 등록 임시로 생성한 API로 추후 회원등록 및 SSO등과 연동시 변경해야 함.
 exports.regist_user = async(req, res) => {
 
     var user_id = req.body.user_id;
