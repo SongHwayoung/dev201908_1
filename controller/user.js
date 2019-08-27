@@ -3,8 +3,7 @@ var decrypt = require('../common/crypto');
 var token_controller = require('./token');
 
 con_mysql.DBopen()
-    .then(con_mysql.initDB())
-    .then(con_mysql.DBclose());
+    .then(con_mysql.initDB());
 
 
 

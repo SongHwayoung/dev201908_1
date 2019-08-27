@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const user_controller = require('../controller/user');
 const token_controller = require('../controller/token');
-
+const oauth_functions = require('../controller/oauth_functions');
 
 // 사용자 등록
 router.post('/regist_user', user_controller.regist_user);
@@ -19,6 +19,9 @@ router.post('/refresh_token', token_controller.refresh_token);
 // id access token 유효성 확인
 router.post('/validation_token', token_controller.validation_token);
 
+
+// id access token 유효성 확인
+router.post('/test', oauth_functions.test);
 
 
 module.exports = router;

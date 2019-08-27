@@ -54,8 +54,17 @@ function DBopen() {
 
 function DBclose() {
     return new Promise(function(resolve, reject) {
-        this.db.close();
-        resolve(true);
+
+        this.db.close((err) => {
+          if (err) {
+            console.error(err.message);
+            reject(err);
+          } else {
+            console.log('Close the database connection.');
+            resolve(true);
+          }
+         
+        });        
     }) 
 }
 
