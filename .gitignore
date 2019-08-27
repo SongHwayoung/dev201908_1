@@ -1,0 +1,7 @@
+
+# Dependency directories
+node_modules/
+
+sqlite3.exe
+db_oauth.db
+package-lock.json
