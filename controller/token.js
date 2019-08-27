@@ -162,13 +162,11 @@ async function set_access_token(user_id){
     try {
         
         result.expire_time = access_expire_time;
-        await con_redis.redisPool.del(user_id + 'access'); // 우선 기존 access token 정보를 지운다.
         await con_redis.redisPool.set(user_id + 'access', JSON.stringify(result));
         await con_redis.redisPool.expire(user_id + 'access', access_expire_time); // 임시로 60초의 생성시간을 준다.
         
-        await con_redis.redisPool.del(user_id + 'refresh'); // 우선 기존 refresh token 정보를 지운다.
         await con_redis.redisPool.set(user_id + 'refresh', JSON.stringify(result));
-        await con_redis.redisPool.expire(user_id + 'refresh', refresh_expire_time); // 임시로 60초의 생성시간을 준다
+        await con_redis.redisPool.expire(user_id + 'refresh', refresh_expire_time); // 임시로 120초의 생성시간을 준다
         result.errorCode = 0;
     } catch(err) {
         result.errorCode = 300; 

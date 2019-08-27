@@ -2,6 +2,11 @@ var con_mysql = require('../common/connection_mysql');
 var decrypt = require('../common/crypto');
 var token_controller = require('./token');
 
+con_mysql.DBopen()
+    .then(con_mysql.initDB())
+    .then(con_mysql.DBclose());
+
+
 
 // 사용자 등록 임시로 생성한 API로 추후 회원등록 및 SSO등과 연동시 변경해야 함.
 exports.regist_user = async(req, res) => {
@@ -9,10 +14,15 @@ exports.regist_user = async(req, res) => {
     var user_id = req.body.user_id;
     var password = decrypt.decrypt(req.body.password);
 
-    var sql = 'INSERT INTO db_oauth.user_master (user_id, password, reg_date) VALUES(?, ?, now())';
+    //var sql = 'INSERT INTO db_oauth.user_master (user_id, password, reg_date) VALUES(?, ?, now())';
+    var sql = "INSERT INTO user_master (user_id, password, reg_date) VALUES(?, ?, datetime('now','localtime'))";
+    
     var params = [user_id, password];
     try {
-        var result = await con_mysql.query(sql, params);
+        //var result = await con_mysql.query(sql, params);
+        await con_mysql.DBopen();
+        var result = await con_mysql.run(sql, params);
+        await con_mysql.DBclose();
         res.status(200).send('The user info has been saved!'); 
         
     } catch(err) {
@@ -69,21 +79,29 @@ async function user_search (user_id , password){
     result.errorCode = 100; // 0: 정상 , 100:유저가 없음 , 200:password 가 잘못됨, 300: 기타 오류
     result.user_id = "";
     result.reg_date = 0;
-    var sql = 'SELECT user_id , password , reg_date FROM db_oauth.user_master WHERE user_id = ?';
+    //var sql = 'SELECT user_id , password , reg_date FROM db_oauth.user_master WHERE user_id = ?';
+    var sql = 'SELECT user_id , password , reg_date FROM user_master WHERE user_id = ?';
     var params = [user_id];
     try {
-        const [rows] = await con_mysql.query(sql, params);
+        //const [rows] = await con_mysql.query(sql, params);
+        await con_mysql.DBopen();
+        //const [rows] = await con_mysql.all(sql, params);
+        const rows = await con_mysql.get(sql, params);
+        await con_mysql.DBclose();
      
         if (rows.length == 0){       
             console.log('No Record');      
             result.errorCode = 100;
-        } else if(rows[0].password != decryptPassword ){            
+        //} else if(rows[0].password != decryptPassword ){            
+        } else if(rows.password != decryptPassword ){            
             console.log('Password error');      
             result.errorCode = 200;
         } else {           
             result.errorCode = 0; 
-            result.user_id = rows[0].user_id;
-            result.reg_date = rows[0].reg_date;
+            //result.user_id = rows[0].user_id;
+            //result.reg_date = rows[0].reg_date;
+            result.user_id = rows.user_id;
+            result.reg_date = rows.reg_date;
         }
     } catch(err) {
         console.log('error');     
